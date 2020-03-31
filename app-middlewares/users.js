@@ -64,7 +64,7 @@ router.post('/user', async (req, res) => {
           }
         } else {
           console.log('\n\n---------------| USER CREATED, SENDING EMAIL WITH ACCESS CREDENTIALS|---------------');
-          console.log('nmb-school - ' + Date() + ' > [ ' + idNumber + ': ' + firstName + ' ' + surname + ' ]');
+          console.log('nmb-school - ' + Date() + ' > [ id: ' + idNumber + ': ' + firstName + ' ' + surname +' password: '+initialPassword+ ' ]');
           
           message = `Good day ${title} ${surname} ${firstName}. 
           We have registered your school to accept online fees
