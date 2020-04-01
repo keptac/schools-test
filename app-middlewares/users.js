@@ -22,7 +22,7 @@ router.post('/user', async (req, res) => {
   const initialPassword = '@pass' + Math.floor(Math.random() * 1000);
   const passwordReset = 1;
   const password = cryptr.encrypt(initialPassword);
-  const url = 'localhost:4200/password-reset';
+  const url = 'https://25670a72.ngrok.io/#/reset-password';
 
   const checkUser = await query(conn, `SELECT * FROM school_user WHERE id_number = '${idNumber}' OR email_address = '${emailAddress}' OR phone_number='${phoneNumber}'`);
 
@@ -35,7 +35,7 @@ router.post('/user', async (req, res) => {
         const school = await query(conn, `DELETE FROM school WHERE school_id = '${schoolId}'`);
         if (school != undefined) {
           console.log('nmb-school - ' + Date() + ' > --------------------------| School Deleted |----------------');
-          res.status(500).send({
+          res.status(200).send({
             'statusCode': 500,
             'message': 'DB Error',
             'responseBody': {
@@ -52,7 +52,7 @@ router.post('/user', async (req, res) => {
           console.log('\nnmb-school - ' + Date() + ' > ---------------> USER CREATION FAILED <---------------');
           const school = await query(conn, `DELETE FROM school_user WHERE id_number = '${idNumber}'`);
           if (school != undefined) {
-            res.status(500).send({
+            res.status(200).send({
               'statusCode': 500,
               'message': 'DB Error',
               'responseBody': {
@@ -67,13 +67,12 @@ router.post('/user', async (req, res) => {
           console.log('nmb-school - ' + Date() + ' > [ id: ' + idNumber + ': ' + firstName + ' ' + surname +' password: '+initialPassword+ ' ]');
           
           message = `Good day ${title} ${surname} ${firstName}. 
-          We have registered your school to accept online fees
-          payments. To finish your configurations, please visit ${url}. 
-          Your username is your ID Number and your temporary password is: ${initialPassword}.
+We have registered your school to accept online fees payments. To finish your configurations, please visit ${url}. 
+Your username is your ID Number and your temporary password is: ${initialPassword}.
           
-          Thank you for banking with us.
-          Regards
-          NMB`;
+Thank you for banking with us.
+Regards
+NMBZ`;
 
           axios.post('http://localhost:4000/api/nmb/email/send', {
             "subject": "School Fees Portal Profile Creation Success",
@@ -104,7 +103,7 @@ router.post('/user', async (req, res) => {
     }
   } else {
     console.log('\nnmb-school - ' + Date() + ' > --------------|User already exist: \n' + JSON.stringify(checkUser) + ' |---------------');
-    res.status(500).send({
+    res.status(200).send({
       'statusCode': 500,
       'message': 'Duplicate Entry',
       'responseBody': {

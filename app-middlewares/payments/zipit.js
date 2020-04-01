@@ -9,7 +9,8 @@ call = '';
 const router = express.Router();
 
 router.post('/pay', async (req, res) => {
-    console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfere |---------------');
+    console.log('\nnmb-school - ' + Date() + ' > ---------------| ZIPIT |---------------');
+    const conn = await connection(dbConfig).catch(e => {});
 
     const studentId = req.body.studentId;
     const schoolId = req.body.schoolId;
@@ -24,46 +25,60 @@ router.post('/pay', async (req, res) => {
     const paymentAmounts = req.body.paymentAmounts;
     const accountNumber = req.body.toAccount;
     const totalAmount = req.body.totalAmount;
+    const destinationBanks = req.body.destinationBank;
+    const schoolPhoneNumber = req.body.schoolPhoneNumber;
 
-    console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfere 2 |---------------');
     console.log(paymentAmounts);
     console.log(accountNumber);
+    console.log(destinationBanks);
 
     const fromAccount = req.body.fromAccount;
     payment = undefined;
     paymentReference = '';
     var toAccounts = '';
     var amounts = '';
+    var banks = '';
 
 
 
     for (let i = 0; i < paymentFields.length; i++) {
         amounts = amounts + ',' + paymentAmounts[i];
         toAccounts = toAccounts + ',' + accountNumber[i];
+        banks = banks + ',' + destinationBanks[i];
     }
 
     amounts = amounts.replace(/(^,)|(,$)/g, "");
     toAccounts = toAccounts.replace(/(^,)|(,$)/g, "");
+    banks = banks.replace(/(^,)|(,$)/g, "");
 
-    console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfere 4 |---------------');
+    console.log(amounts);
+    console.log(toAccounts);
+    console.log(banks);
 
-    const conn = await connection(dbConfig).catch(e => {});
-    axios.post('http://196.43.106.54:9014/v1/rest/iso/internaltransfer', {
-            "operation": "INTERNAL_TRANSFER",
+    console.log('\nnmb-school - ' + Date() + ' > ---------------| ZIPIT Transfere 2 |---------------');
+
+
+
+    axios.post('http://196.43.106.54:9457/v1/rest/iso/secured/zipit', {
+            "operation": "ZIPIT",
             "channel": "SCHOOL_FEES_PAYMENT",
-            "asyncRequest": false,
             "accessToken": "8ff744c0-3990-41b6-9c42-a1e98915860e",
             "uuid": "8ff744c0-3990-41b6-9c42-a1e98915860e",
+            "asyncRequest": false,
             "requestBody": {
-                "fromAccount": fromAccount,
-                "toAccount": toAccounts,
+                "cardNumber": fromAccount,
+                "destinationBankBin": banks,
+                "destinationAccount": toAccounts,
+                "destinationMobile": schoolPhoneNumber,
                 "amount": amounts,
-                "mobileNumber": mobileNumber
+                "reference": `Term ${term} Fees for ${studentName} ${studentSurname}`,
+                "senderMobileNumber": mobileNumber,
+                "nmbReference": "NMB01, NMB02"
             }
         }).then(async function (response) {
             console.log('\nnmb-school - ' + Date() + ' > ---------------| Waiting for server response |---------------');
             if (response.data.message == "FAILED" || response.data.message == "failed") {
-                console.log('\nnmb-school - ' + Date() + ' > ---------------| IFT Initiation failed |---------------');
+                console.log('\nnmb-school - ' + Date() + ' > ---------------| ZIPIT Initiation failed |---------------');
                 console.log('nmb-school - ' + Date() + ' > ' + response.data.responseBody.reason + '\n');
                 res.status(200).send({
                     'statusCode': 200,
@@ -77,7 +92,7 @@ router.post('/pay', async (req, res) => {
                 if (paymentReference != null) {
                     for (let i = 0; i < paymentFields.length; i++) {
                         const fieldPaymentReference = paymentFields[i] + '-' + paymentReference;
-                        const channel = 'INTERNAL TRANSFERE';
+                        const channel = 'ZIPIT';
                         const paymentCheck = await query(conn, `SELECT * FROM payments WHERE field_payment_reference = '${fieldPaymentReference}'`);
                         if (paymentCheck.length == 0) {
                             payment = await query(conn, `INSERT INTO payments (payment_reference, field_payment_reference, student_id, school_id, student_surname, student_name, phone_number, email_address, class, term, payment_field, payment_amount, channel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?)`, [paymentReference, fieldPaymentReference, studentId, schoolId, studentSurname, studentName, mobileNumber, emailAddress, className, term, paymentFields[i], paymentAmounts[i], channel]);

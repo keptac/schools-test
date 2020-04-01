@@ -31,7 +31,7 @@ router.post('/pay', async (req, res) => {
             payment = await query(conn, `INSERT INTO payments (payment_reference, field_payment_reference, student_id, school_id, student_surname, student_name, phone_number, email_address, class, term, payment_field, payment_amount, channel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?)`, [paymentReference, fieldPaymentReference, studentId, schoolId, studentSurname, studentName, phoneNumber, emailAddress, className, term, paymentFields[i], paymentAmounts[i], channel]);
         } else {
             console.log('\nnmb-school - ' + Date() + ' > --------------| Duplicate Transaction  ' + fieldPaymentReference + '|---------------');
-            res.status(500).send({
+            res.status(200).send({
                 'statusCode': 500,
                 'message': 'Duplicte Transaction Error',
                 'responseBody': {
@@ -43,7 +43,7 @@ router.post('/pay', async (req, res) => {
 
     if (payment == undefined) {
         console.log('Payment Details: { \n School ID: ' + schoolId + '\n Reference : ' + paymentReference + '\n StudentName: ' + studentSurname + ' ' + studentName + ' ' + studentId + '\n}');
-        res.status(500).send({
+        res.status(200).send({
             'statusCode': 500,
             'message': 'DB Error',
             'responseBody': {

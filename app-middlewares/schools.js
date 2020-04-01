@@ -26,7 +26,7 @@ router.post('/school', async (req, res) => {
   const school = await query(conn, `INSERT INTO school (school_id, school_name, school_address, logo_url, category, status_code, created_by, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [schoolId, schoolName, schoolAddress, logoUrl, category, statusCode, createdBy, updatedBy]);
   if (school == undefined) {
     console.log('\nnmb-school - ' + Date() + ' > ---------------| SCHOOL ONBOARDING FAILED |---------------');
-    res.status(500).send({
+    res.status(200).send({
       'statusCode': 500,
       'message': 'DB Error',
       'responseBody': {
@@ -105,7 +105,7 @@ router.post('/fees-struct', async (req, res) => {
 
   if (fee_struct == undefined) {
     console.log('\nnmb-school - ' + Date() + ' > ---------------> Fees Structure Configuration Failed <---------------');
-    res.status(500).send({
+    res.status(200).send({
       'statusCode': 500,
       'message': 'DB Error',
       'responseBody': {
@@ -176,7 +176,7 @@ router.post('/field', async (req, res) => {
   const fieldQuery = await query(conn, `INSERT INTO fields_config (school_id, field, status) VALUES (?, ?, ?)`, [schoolId, field, status]);
   if (fieldQuery == undefined) {
     console.log('\nnmb-school - ' + Date() + ' > ---------------> FIELD CONFIGURATION FAILED <---------------');
-    res.status(500).send({
+    res.status(200).send({
       'statusCode': 500,
       'message': 'DB Error'
     });

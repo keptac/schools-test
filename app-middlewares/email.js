@@ -31,7 +31,7 @@ router.post('/send', async (req, res) => {
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log(error);
-            res.send(500).send({
+            res.send(200).send({
                 'statusCode': 500,
                 'message': 'Failed',
                 'responseBody': {

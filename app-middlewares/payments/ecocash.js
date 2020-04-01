@@ -39,7 +39,7 @@ router.post('/pay', async (req, res) => {
     accountNumbers = accountNumbers.replace(/(^,)|(,$)/g, "");
 
     // 'http://192.168.10.73:9430/v1/rest/iso/secured/ecocash/pay'
-    
+
     axios.post('http://196.43.106.54:9430/v1/rest/iso/secured/ecocash/pay', {
             'operation': 'SCHOOL_FEES_PAYMENT',
             'async': true,
@@ -52,54 +52,69 @@ router.post('/pay', async (req, res) => {
                 'transactionType': 'SCHOOL_FEES_PAYMENT',
             }
         }).then(async function (response) {
-            paymentReference = response.data.responseBody.redisInitiatedEcoCash.clientCorrelator;
-            for (let i = 0; i < paymentFields.length; i++) {
-                const fieldPaymentReference = paymentFields[i] + '-' + paymentReference;
-                const channel = 'ECOCASH';
-                const paymentCheck = await query(conn, `SELECT * FROM payments WHERE field_payment_reference = '${fieldPaymentReference}'`);
-                if (paymentCheck.length == 0) {
-                    payment = await query(conn, `INSERT INTO payments (payment_reference, field_payment_reference, student_id, school_id, student_surname, student_name, phone_number, email_address, class, term, payment_field, payment_amount, channel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [paymentReference, fieldPaymentReference, studentId, schoolId, studentSurname, studentName, phoneNumber, emailAddress, className, term, paymentFields[i], paymentAmounts[i], channel]);
-                } else {
-                    console.log('\nnmb-school - ' + Date() + ' > --------------| Duplicate Transaction  ' + fieldPaymentReference + '|---------------');
-                    res.status(500).send({
-                        'statusCode': 500,
-                        'message': 'Duplicte Transaction Error',
-                        'responseBody': {
-                            'message': 'Failed to capture payment.',
-                            'reference': fieldPaymentReference,
-                        }
-                    });
-                }
-            }
-
-            if (payment == undefined) {
-                console.log('\nnmb-school - ' + Date() + ' > ---------------> Ecocash hit but - Failed to save payment in local db <---------------');
-                console.log('Payment Details: { \n School ID: ' + schoolId + '\n Ecocash Reference : ' + paymentReference + '\n StudentName: ' + studentSurname + ' ' + studentName + ' ' + studentId + '\n}');
-                res.status(500).send({
-                    'statusCode': 500,
-                    'message': 'DB Error',
+            console.log('\nnmb-school - ' + Date() + ' > ---------------| Waiting for ecocash response |---------------');
+            if (response.data.message == "FAILED") {
+                console.log('\nnmb-school - ' + Date() + ' > ---------------| Ecocash Initiation failed |---------------');
+                console.log('nmb-school - ' + Date() + ' > ' + response.data.responseBody.reason + '\n');
+                res.status(200).send({
+                    'statusCode': 200,
+                    'message': 'Failed',
                     'responseBody': {
-                        'message': 'Failed to capture payment.',
-                        'reference': paymentReference,
+                        'reason': 'Failed to initiate transaction.'
                     }
                 });
-                res.end();
             } else {
-                (async () => {
-                    console.log('nmb-school - ' + Date() + ' ---------------| Transaction Pending Confirmation |---------------');
-                    await delay(10000);
-                    console.log('nmb-school - ' + Date() + ' ---------------| Payment was successfully captured |---------------\n');
-                    res.status(201).send({
-                        'statusCode': 201,
-                        'message': 'Success',
+                console.log('\nnmb-school - ' + Date() + ' > ---------------| Ecocash Success |---------------');
+                paymentReference = response.data.responseBody.redisInitiatedEcoCash.clientCorrelator;
+                for (let i = 0; i < paymentFields.length; i++) {
+                    const fieldPaymentReference = paymentFields[i] + '-' + paymentReference;
+                    const channel = 'ECOCASH';
+                    const paymentCheck = await query(conn, `SELECT * FROM payments WHERE field_payment_reference = '${fieldPaymentReference}'`);
+                    if (paymentCheck.length == 0) {
+                        payment = await query(conn, `INSERT INTO payments (payment_reference, field_payment_reference, student_id, school_id, student_surname, student_name, phone_number, email_address, class, term, payment_field, payment_amount, channel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [paymentReference, fieldPaymentReference, studentId, schoolId, studentSurname, studentName, phoneNumber, emailAddress, className, term, paymentFields[i], paymentAmounts[i], channel]);
+                    } else {
+                        console.log('\nnmb-school - ' + Date() + ' > --------------| Duplicate Transaction  ' + fieldPaymentReference + '|---------------');
+                        res.send({
+                            'statusCode': 500,
+                            'message': 'Duplicte Transaction Error',
+                            'responseBody': {
+                                'reason': 'Failed to capture payment.',
+                                'reference': fieldPaymentReference,
+                            }
+                        });
+                    }
+                }
+
+                if (payment == undefined) {
+                    console.log('\nnmb-school - ' + Date() + ' > ---------------> Ecocash hit but - Failed to save payment in local db <---------------');
+                    console.log('Payment Details: { \n School ID: ' + schoolId + '\n Ecocash Reference : ' + paymentReference + '\n StudentName: ' + studentSurname + ' ' + studentName + ' ' + studentId + '\n}');
+                    res.send({
+                        'statusCode': 500,
+                        'message': 'DB Error',
                         'responseBody': {
+                            'reason': 'Failed to capture payment.',
                             'reference': paymentReference,
-                            'amount': totalAmount
                         }
                     });
                     res.end();
-                })();
+                } else {
+                    (async () => {
+                        console.log('nmb-school - ' + Date() + ' ---------------| Transaction Pending Confirmation |---------------');
+                        await delay(10000);
+                        console.log('nmb-school - ' + Date() + ' ---------------| Payment was successfully captured |---------------\n');
+                        res.status(201).send({
+                            'statusCode': 201,
+                            'message': 'Success',
+                            'responseBody': {
+                                'reference': paymentReference,
+                                'amount': totalAmount
+                            }
+                        });
+                        res.end();
+                    })();
+                }
             }
+
         })
         .catch(function (error) {
             console.log(error);
