@@ -22,9 +22,7 @@ router.post('/pay', async (req, res) => {
     const paymentAmounts = req.body.paymentAmounts;
     const totalAmount = req.body.totalAmount;
     const accountNumber = req.body.accountNumber;
-
     const conn = await connection(dbConfig).catch(e => {});
-
     var payment = undefined;
     var paymentReference = '';
     var amounts = '';

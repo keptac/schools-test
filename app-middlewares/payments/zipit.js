@@ -39,8 +39,6 @@ router.post('/pay', async (req, res) => {
     var amounts = '';
     var banks = '';
 
-
-
     for (let i = 0; i < paymentFields.length; i++) {
         amounts = amounts + ',' + paymentAmounts[i];
         toAccounts = toAccounts + ',' + accountNumber[i];

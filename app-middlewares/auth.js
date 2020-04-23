@@ -44,12 +44,12 @@ router.put('/password-reset', async (req, res) => {
 
   const conn = await connection(dbConfig).catch(e => {});
 
-  const results = await query(conn, `SELECT * FROM SCHOOL_LOGIN WHERE id_number = '${username}'`).catch(console.log);
+  const results = await query(conn, `SELECT * FROM school_login WHERE id_number = '${username}'`).catch(console.log);
   if (results.length > 0) {
 
     if (cryptr.decrypt(results[0].password) == oldPassword) {
     
-      const reset = query(conn, `UPDATE SCHOOL_LOGIN SET password = '${password}', password_reset = '0' WHERE id_number = '${username}'`).catch(console.log);;
+      const reset = query(conn, `UPDATE school_login SET password = '${password}', password_reset = '0' WHERE id_number = '${username}'`).catch(console.log);;
       if (reset != undefined) {
         res.status(201).send({
           'statusCode': 201,
@@ -98,14 +98,14 @@ router.post('/login', async (req, res) => {
 
   if (route == 'school') {
     console.log(route);
-    const results = await query(conn, `SELECT * FROM SCHOOL_LOGIN WHERE id_number = '${username}'`).catch(console.log);
+    const results = await query(conn, `SELECT * FROM school_login WHERE id_number = '${username}'`).catch(console.log);
     if (results.length > 0) {
       console.log(cryptr.decrypt(results[0].password));
       console.log(password);
       if (cryptr.decrypt(results[0].password) == password) {
-        const userDet = await query(conn, `SELECT * FROM SCHOOL_USER WHERE id_number = '${username}'`).catch(console.log);
+        const userDet = await query(conn, `SELECT * FROM school_user WHERE id_number = '${username}'`).catch(console.log);
         const fullDet = userDet[0].first_name + ' ' + userDet[0].surname;
-        const photo = await query(conn, `SELECT * FROM SCHOOL WHERE school_id = '${userDet[0].school_id}'`).catch(console.log);
+        const photo = await query(conn, `SELECT * FROM school WHERE school_id = '${userDet[0].school_id}'`).catch(console.log);
 
         const user = {
           'fullName': fullDet,
@@ -163,10 +163,10 @@ router.post('/login', async (req, res) => {
       });
     }
   } else {
-    const results = await query(conn, `SELECT * FROM NMB_LOGIN WHERE username = '${username}'`).catch(console.log);
+    const results = await query(conn, `SELECT * FROM nmb_login WHERE username = '${username}'`).catch(console.log);
     if (results.length > 0) {
       if (cryptr.decrypt(results[0].password) == password) {
-        const userDet = await query(conn, `SELECT * FROM NMB_LOGIN WHERE username = '${username}'`).catch(console.log);
+        const userDet = await query(conn, `SELECT * FROM nmb_login WHERE username = '${username}'`).catch(console.log);
 
         const user = {
           'fullName': userDet[0].username,
