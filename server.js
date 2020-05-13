@@ -3,9 +3,6 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const passport = require('passport');
 
-
-var cors = require('cors');
-const dashRouter = require('./app-middlewares/dash');
 const schoolsRouter = require('./app-middlewares/schools');
 const usersRouter = require('./app-middlewares/users');
 const paymentsRouter = require('./app-middlewares/payments/payments');
@@ -16,11 +13,10 @@ const zipitRouter = require('./app-middlewares/payments/zipit');
 const manualPaymentRouter = require('./app-middlewares/payments/manualPayment');
 const authRouter = require('./app-middlewares/auth');
 const emailRouter = require('./app-middlewares/email');
-
-// const uploadFilesRouter = require('./app-middlewares/upload');
-const port = 4000;
+const port = 3100;
 const app = express();
 
+var cors = require('cors');
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -31,7 +27,6 @@ app.use(passport.session());
 app.use(cors());
 
 const PATH = '../school-fees/src/assets/images/school-logos'
-// const PATH = 'C:/xampp/htdocs/assets/images/school-logos'
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -61,9 +56,8 @@ app.post('/api/nmb/upload/logo', upload.single('logo'), function (req, res) {
   }
 });
 
-app.get('/', (req, res) => res.send('Welcome to NMB School Fees Payments Gateway ENDPOINT'));
+app.get('/', (req, res) => res.send('Welcome to NMBZ School Fees Payments Gateway'));
 app.use('/api/auth', authRouter);
-app.use('/api/nmb', dashRouter);
 app.use('/api/nmb/schools', schoolsRouter);
 app.use('/api/nmb/users', usersRouter);
 app.use('/api/nmb/email', emailRouter);

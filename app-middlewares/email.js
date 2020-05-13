@@ -4,7 +4,6 @@ var nodemailer = require('nodemailer');
 const router = express.Router();
 
 router.post('/send', async (req, res) => {
-
     const subject = req.body.subject;
     const emailAddress = req.body.emailAddress;
     const messageBody = req.body.messageBody;
@@ -40,7 +39,7 @@ router.post('/send', async (req, res) => {
             });
             res.end();
         } else {
-            console.log('Email sent to ' +emailAddress );
+            console.log('Email sent to ' + emailAddress);
             res.send(200).send({
                 'statusCode': 200,
                 'message': 'Success',

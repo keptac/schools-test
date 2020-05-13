@@ -10,78 +10,6 @@ const fee_struct = '';
 
 
 
-
-
-
-// var ConnectionPool = require('tedious-connection-pool');
-// var Request = require('tedious').Request;
-
-// var poolConfig = {
-//   min: 2,
-//   max: 4,
-//   log: true
-// };
-
-// var connectionConfig = {
-//   userName: 'root',
-//   password: '',
-//   server: 'localhost',
-//   database: 'school_fees_db',
-//   driver: 'tedious',
-//   options: {
-//       instanceName: 'sql'
-//   }
-// };
-
-// //create the pool
-
-router.get('/school/test', async (req, res) => {
-
-  var pool = new ConnectionPool(poolConfig, connectionConfig);
-
-  pool.on('error', function (err) {
-    console.error(err);
-  });
-
-  //acquire a connection
-  pool.acquire(function (err, connection) {
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    //use the connection as normal
-    var request = new Request('SELECT * FROM school', function (err, rowCount) {
-      if (err) {
-        console.error(err);
-        return;
-      }
-
-      console.log('rowCount: ' + rowCount);
-
-      //release the connection back to the pool when finished
-      connection.release();
-    });
-
-    request.on('row', function (columns) {
-      console.log('value: ' + columns[0].value);
-    });
-
-    connection.execSql(request);
-  });
-
-  // pool.drain();
-});
-
-
-
-
-
-
-
-
-
-
 // POST Request - Add New School
 router.post('/school', async (req, res) => {
   const schoolId = 'NMBSC' + Math.floor(Math.random() * 1000);
@@ -297,7 +225,6 @@ router.get('/fields', async (req, res) => {
 });
 
 
-
 // POST Request - SearchSchool
 router.post('/search', async (req, res) => {
   const schoolId = req.body.schoolId;
@@ -351,6 +278,28 @@ router.get('/tertiary', async (req, res) => {
   res.json({
     results
   });
+});
+
+
+router.put('/update/:id', async (req, res) => {
+  const id = req.params.id;
+  const address = req.body.address;
+  const conn = await connection(dbConfig).catch(e => {});
+
+  console.log(address);
+  console.log(id);
+
+  const updateResp = query(conn, `UPDATE school SET school_address = '${address}', status_code='111' WHERE school_id = ${id}`);
+
+
+  if (updateResp != undefined) {
+    console.log('nmb-school - ' + Date() + ' ---------------| School Update successfully |---------------\n');
+    res.status(201).send({
+      'statusCode': 201,
+      'message': 'Success',
+    });
+  }
+  res.end();
 });
 
 module.exports = router;

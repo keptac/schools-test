@@ -77,7 +77,7 @@ router.post('/pay', async (req, res) => {
                 if (paymentReference != null) {
                     for (let i = 0; i < paymentFields.length; i++) {
                         const fieldPaymentReference = paymentFields[i] + '-' + paymentReference;
-                        const channel = 'INTERNAL TRANSFERE';
+                        const channel = 'INTERNAL_TRANSFERE';
                         const paymentCheck = await query(conn, `SELECT * FROM payments WHERE field_payment_reference = '${fieldPaymentReference}'`);
                         if (paymentCheck.length == 0) {
                             payment = await query(conn, `INSERT INTO payments (payment_reference, field_payment_reference, student_id, school_id, student_surname, student_name, phone_number, email_address, class, term, payment_field, payment_amount, channel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?)`, [paymentReference, fieldPaymentReference, studentId, schoolId, studentSurname, studentName, mobileNumber, emailAddress, className, term, paymentFields[i], paymentAmounts[i], channel]);

@@ -55,8 +55,6 @@ router.post('/pay', async (req, res) => {
 
     console.log('\nnmb-school - ' + Date() + ' > ---------------| ZIPIT Transfere 2 |---------------');
 
-
-
     axios.post('http://196.43.106.54:9457/v1/rest/iso/secured/zipit', {
             "operation": "ZIPIT",
             "channel": "SCHOOL_FEES_PAYMENT",

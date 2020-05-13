@@ -64,6 +64,7 @@ router.post('/pay', async (req, res) => {
             } else {
                 console.log('\nnmb-school - ' + Date() + ' > ---------------| Ecocash Success |---------------');
                 paymentReference = response.data.responseBody.redisInitiatedEcoCash.clientCorrelator;
+
                 for (let i = 0; i < paymentFields.length; i++) {
                     const fieldPaymentReference = paymentFields[i] + '-' + paymentReference;
                     const channel = 'ECOCASH';

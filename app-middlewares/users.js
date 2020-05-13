@@ -22,7 +22,7 @@ router.post('/user', async (req, res) => {
   const initialPassword = '@pass' + Math.floor(Math.random() * 1000);
   const passwordReset = 1;
   const password = cryptr.encrypt(initialPassword);
-  const url = 'https://25670a72.ngrok.io/#/reset-password';
+  const url = 'http://196.43.106.54:8082/#/reset-password';
 
   const checkUser = await query(conn, `SELECT * FROM school_user WHERE id_number = '${idNumber}' OR email_address = '${emailAddress}' OR phone_number='${phoneNumber}'`);
 
@@ -73,7 +73,6 @@ Your username is your ID Number and your temporary password is: ${initialPasswor
 Thank you for banking with us.
 Regards
 NMBZ`;
-
           axios.post('http://localhost:4000/api/nmb/email/send', {
             "subject": "School Fees Portal Profile Creation Success",
             "emailAddress": emailAddress,
