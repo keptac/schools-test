@@ -35,8 +35,6 @@ router.post('/pay', async (req, res) => {
     var toAccounts = '';
     var amounts = '';
 
-
-
     for (let i = 0; i < paymentFields.length; i++) {
         amounts = amounts + ',' + paymentAmounts[i];
         toAccounts = toAccounts + ',' + accountNumber[i];
@@ -48,8 +46,8 @@ router.post('/pay', async (req, res) => {
     console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfere 4 |---------------');
 
     const conn = await connection(dbConfig).catch(e => {});
-    axios.post('http://196.43.106.54:9014/v1/rest/iso/internaltransfer', {
-            "operation": "INTERNAL_TRANSFER",
+    axios.post('http://196.43.106.54:9480/v1/rest/iso/secured/postilion', {
+            "operation": "SCHOOL_FEES_PAYMENT_INTERNAL_TRANSFER",
             "channel": "SCHOOL_FEES_PAYMENT",
             "asyncRequest": false,
             "accessToken": "8ff744c0-3990-41b6-9c42-a1e98915860e",
