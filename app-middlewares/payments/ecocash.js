@@ -36,7 +36,7 @@ router.post('/pay', async (req, res) => {
     amounts = amounts.replace(/(^,)|(,$)/g, "");
     accountNumbers = accountNumbers.replace(/(^,)|(,$)/g, "");
 
-    // 'http://192.168.10.73:9430/v1/rest/iso/secured/ecocash/pay'
+    // 'http://192.168.10.73:9430/v1/rest/iso/secured/ecocash/pay' 196.43.106.54:9430
 
     axios.post('http://196.43.106.54:9430/v1/rest/iso/secured/ecocash/pay', {
             'operation': 'SCHOOL_FEES_PAYMENT',
@@ -54,6 +54,7 @@ router.post('/pay', async (req, res) => {
             if (response.data.message == "FAILED") {
                 console.log('\nnmb-school - ' + Date() + ' > ---------------| Ecocash Initiation failed |---------------');
                 console.log('nmb-school - ' + Date() + ' > ' + response.data.responseBody.reason + '\n');
+                console.log(response.data);
                 res.status(200).send({
                     'statusCode': 200,
                     'message': 'Failed',
@@ -64,7 +65,9 @@ router.post('/pay', async (req, res) => {
             } else {
                 console.log('\nnmb-school - ' + Date() + ' > ---------------| Ecocash Success |---------------');
                 paymentReference = response.data.responseBody.redisInitiatedEcoCash.clientCorrelator;
-
+                await delay(100000);
+                //check txn status
+                
                 for (let i = 0; i < paymentFields.length; i++) {
                     const fieldPaymentReference = paymentFields[i] + '-' + paymentReference;
                     const channel = 'ECOCASH';
@@ -101,6 +104,7 @@ router.post('/pay', async (req, res) => {
                         console.log('nmb-school - ' + Date() + ' ---------------| Transaction Pending Confirmation |---------------');
                         await delay(10000);
                         console.log('nmb-school - ' + Date() + ' ---------------| Payment was successfully captured |---------------\n');
+
                         res.status(201).send({
                             'statusCode': 201,
                             'message': 'Success',
@@ -117,6 +121,15 @@ router.post('/pay', async (req, res) => {
         })
         .catch(function (error) {
             console.log(error);
+            res.status(200).send({
+                'statusCode': 500,
+                'message': 'Failed',
+                'responseBody': {
+                    'reason': 'Transaction could not be completed successfully. Please contact your bank.',
+                    'reference': null,
+                    'amount': totalAmount
+                }
+            });
         });
 });
 

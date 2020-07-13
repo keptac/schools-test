@@ -9,7 +9,7 @@ call = '';
 const router = express.Router();
 
 router.post('/pay', async (req, res) => {
-    console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfere |---------------');
+    console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfer |---------------');
 
     const studentId = req.body.studentId;
     const schoolId = req.body.schoolId;
@@ -25,7 +25,7 @@ router.post('/pay', async (req, res) => {
     const accountNumber = req.body.toAccount;
     const totalAmount = req.body.totalAmount;
 
-    console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfere 2 |---------------');
+    console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfer 2 |---------------');
     console.log(paymentAmounts);
     console.log(accountNumber);
 
@@ -34,35 +34,43 @@ router.post('/pay', async (req, res) => {
     paymentReference = '';
     var toAccounts = '';
     var amounts = '';
+    var referenceSent = '';
 
     for (let i = 0; i < paymentFields.length; i++) {
         amounts = amounts + ',' + paymentAmounts[i];
         toAccounts = toAccounts + ',' + accountNumber[i];
+        referenceSent = referenceSent + ',' + paymentFields[i];
     }
 
     amounts = amounts.replace(/(^,)|(,$)/g, "");
     toAccounts = toAccounts.replace(/(^,)|(,$)/g, "");
 
-    console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfere 4 |---------------');
+    console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfer 4 |---------------');
 
-    const conn = await connection(dbConfig).catch(e => {});
-    axios.post('http://196.43.106.54:9480/v1/rest/iso/secured/postilion', {
+    const conn = await connection(dbConfig).catch(e => { });
+
+  
+        axios.post('http://196.43.106.54:9480/v1/rest/iso/secured/postilion', {
             "operation": "SCHOOL_FEES_PAYMENT_INTERNAL_TRANSFER",
-            "channel": "SCHOOL_FEES_PAYMENT",
+            "channel": "NMB",
             "asyncRequest": false,
             "accessToken": "8ff744c0-3990-41b6-9c42-a1e98915860e",
             "uuid": "8ff744c0-3990-41b6-9c42-a1e98915860e",
             "requestBody": {
+                "currency": "840",
                 "fromAccount": fromAccount,
                 "toAccount": toAccounts,
+                "nmbReference": "fees",
                 "amount": amounts,
                 "mobileNumber": mobileNumber
             }
+
         }).then(async function (response) {
             console.log('\nnmb-school - ' + Date() + ' > ---------------| Waiting for server response |---------------');
             if (response.data.message == "FAILED" || response.data.message == "failed") {
                 console.log('\nnmb-school - ' + Date() + ' > ---------------| IFT Initiation failed |---------------');
                 console.log('nmb-school - ' + Date() + ' > ' + response.data.responseBody.reason + '\n');
+                console.log(response.data);
                 res.status(200).send({
                     'statusCode': 200,
                     'message': 'Failed',
@@ -71,11 +79,12 @@ router.post('/pay', async (req, res) => {
                     }
                 });
             } else {
+                console.log(response.data);
                 paymentReference = response.data.responseBody.postilionRRN;
                 if (paymentReference != null) {
                     for (let i = 0; i < paymentFields.length; i++) {
                         const fieldPaymentReference = paymentFields[i] + '-' + paymentReference;
-                        const channel = 'INTERNAL_TRANSFERE';
+                        const channel = 'INTERNAL_TRANSFER';
                         const paymentCheck = await query(conn, `SELECT * FROM payments WHERE field_payment_reference = '${fieldPaymentReference}'`);
                         if (paymentCheck.length == 0) {
                             payment = await query(conn, `INSERT INTO payments (payment_reference, field_payment_reference, student_id, school_id, student_surname, student_name, phone_number, email_address, class, term, payment_field, payment_amount, channel) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?)`, [paymentReference, fieldPaymentReference, studentId, schoolId, studentSurname, studentName, mobileNumber, emailAddress, className, term, paymentFields[i], paymentAmounts[i], channel]);
@@ -136,9 +145,18 @@ router.post('/pay', async (req, res) => {
                 }
             }
         })
-        .catch(function (error) {
-            console.log(error);
-        });
+            .catch(function (error) {
+                console.log(error);
+                res.status(200).send({
+                    'statusCode': 500,
+                    'message': 'Failed',
+                    'responseBody': {
+                        'reason': 'Transaction could not be completed successfully. Please contact your bank.',
+                        'reference': null,
+                        'amount': totalAmount
+                    }
+                });
+            });
 });
 
 module.exports = router;
