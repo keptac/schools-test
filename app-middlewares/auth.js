@@ -20,8 +20,6 @@ const passportOpts = {
 
 const router = express.Router();
 
-
-
 passport.use(new JwtStrategy(passportOpts, function (jwtPayload, done) {
   const expirationDate = new Date(jwtPayload.exp * 1000);
   if (expirationDate < new Date()) {
@@ -34,9 +32,7 @@ passport.serializeUser(function (user, done) {
   done(null, user.username)
 });
 
-
 router.put('/password-reset', async (req, res) => {
-
   const username = req.body.username;
   const oldPassword = req.body.oldPassword;
   const newPassword = req.body.newPassword;

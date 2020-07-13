@@ -22,7 +22,7 @@ router.post('/user', async (req, res) => {
   const initialPassword = '@pass' + Math.floor(Math.random() * 1000);
   const passwordReset = 1;
   const password = cryptr.encrypt(initialPassword);
-  const url = 'http://196.43.106.54:8082/#/reset-password';
+  const url = 'http://192.168.220.202/#/reset-password';
 
   const checkUser = await query(conn, `SELECT * FROM school_user WHERE id_number = '${idNumber}' OR email_address = '${emailAddress}' OR phone_number='${phoneNumber}'`);
 
