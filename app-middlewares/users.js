@@ -58,12 +58,13 @@ router.post('/user', async (req, res) => {
               'statusCode': 500,
               'message': 'DB Error',
               'responseBody': {
-                'message': 'Failed to create user for school: ' + schoolId,
+                'message': 'Failed to create user for school: ' + schoolId + '. Kindly try adding the school again.',
                 'schoolId': null,
                 'status': null
               }
             });
           }
+          res.end();
         } else {
           console.log('\n\n---------------| USER CREATED, SENDING EMAIL WITH ACCESS CREDENTIALS|---------------');
           console.log('nmb-school - ' + Date() + ' > [ id: ' + idNumber + ': ' + firstName + ' ' + surname +' password: '+initialPassword+ ' ]');
@@ -80,7 +81,6 @@ NMBZ`;
             "emailAddress": emailAddress,
             "messageBody": message
           }).then(async function (response) {
-            console.log(response);
             res.status(201).send({
               'statusCode': 201,
               'message': 'Success',
@@ -89,8 +89,8 @@ NMBZ`;
                 'password': initialPassword
               }
             });
-          });
-          res.end();
+            res.end();
+          }); 
         }
       }
     } else {
@@ -102,6 +102,7 @@ NMBZ`;
         }
       });
     }
+    res.end();
   } else {
     console.log('\nnmb-school - ' + Date() + ' > --------------|User already exist: \n' + JSON.stringify(checkUser) + ' |---------------');
     res.status(200).send({
@@ -123,6 +124,7 @@ router.get('/users', async (req, res) => {
   res.json({
     results
   });
+  
 });
 
 // Get all users for a particular school with school_id :id

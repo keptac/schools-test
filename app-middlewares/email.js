@@ -33,7 +33,7 @@ router.post('/send', async (req, res) => {
                     'reason': response.data.responseBody.reason,
                 }
             });
-
+            res.end();
         } else {
             console.log('\nnmb-school - ' + Date() + ' > ---------------| Email sent to ' + emailAddress + '|---------------');
             res.status(200).send({
@@ -43,6 +43,7 @@ router.post('/send', async (req, res) => {
                     'reason': response.data.responseBody.reason,
                 }
             });
+            res.end();
         }
     }).catch(function (error) {
         console.log('\nnmb-school - ' + Date() + ' > ---------------| Email not sent to: ' + emailAddress + '.\nReason: ' + error + '\n|---------------');
@@ -53,6 +54,7 @@ router.post('/send', async (req, res) => {
                 'reason': 'Server Error. Failed to send email confimation.',
             }
         });
+        res.end();
     });
 });
 module.exports = router;

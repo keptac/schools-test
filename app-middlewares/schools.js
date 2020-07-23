@@ -232,7 +232,7 @@ router.post('/search', async (req, res) => {
     error.log(e)
   });
 
-  const results = await query(conn, `SELECT * FROM school WHERE school_name LIKE '%${schoolId}%'OR school_name LIKE '%${schoolId}%'`);
+  const results = await query(conn, `SELECT * FROM school WHERE school_name LIKE '%${schoolId}%' OR school_name LIKE '%${schoolId}%' AND (status_code = 111 OR status_code=110))`);
 
   if (results == undefined) {
     console.log('\nnmb-school - ' + Date() + ' > ---------------> SCHOOOL SEARCH FAILED <---------------');
