@@ -84,7 +84,6 @@ router.put('/password-reset', async (req, res) => {
   res.end();
 });
 
-
 router.post('/login', async (req, res) => {
   const conn = await connection(dbConfig).catch(e => {});
   const route = req.body.route;
@@ -226,8 +225,6 @@ router.post('/logout', function (req, res) {
   res.sendStatus(204);
 });
 
-
-
 router.post('/refresh', function (req, res) {
   const refreshToken = req.body.refreshToken;
   if (refreshToken in refreshTokens) {
@@ -246,13 +243,10 @@ router.post('/refresh', function (req, res) {
   }
 });
 
-
 router.get('/random', passport.authenticate('jwt'), function (req, res) {
   res.json({
     value: Math.floor(Math.random() * 100)
   });
 });
-
-
 
 module.exports = router;

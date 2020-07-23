@@ -5,6 +5,7 @@ const router = express.Router();
 const dbConfig = require('../dbConfig');
 const Cryptr = require('cryptr');
 const axios = require('axios');
+const { emit } = require('process');
 
 const cryptr = new Cryptr('Nmb-sx00l-F345-g4t38a6');
 
@@ -22,7 +23,8 @@ router.post('/user', async (req, res) => {
   const initialPassword = '@pass' + Math.floor(Math.random() * 1000);
   const passwordReset = 1;
   const password = cryptr.encrypt(initialPassword);
-  const url = 'http://192.168.220.202/#/reset-password';
+  const url = 'http://196.43.106.54:8008/#/reset-password';
+  const emailUrl = 'http://localhost:8888/api/nmb/email/send';
 
   const checkUser = await query(conn, `SELECT * FROM school_user WHERE id_number = '${idNumber}' OR email_address = '${emailAddress}' OR phone_number='${phoneNumber}'`);
 
@@ -73,7 +75,7 @@ Your username is your ID Number and your temporary password is: ${initialPasswor
 Thank you for banking with us.
 Regards
 NMBZ`;
-          axios.post('http://localhost:4000/api/nmb/email/send', {
+          axios.post(emailUrl, {
             "subject": "School Fees Portal Profile Creation Success",
             "emailAddress": emailAddress,
             "messageBody": message

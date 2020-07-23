@@ -4,7 +4,6 @@ const connection = require('../../helpers/connection');
 const query = require('../../helpers/query');
 const dbConfig = require('../../dbConfig');
 const delay = require('delay');
-call = '';
 
 const router = express.Router();
 
@@ -63,9 +62,9 @@ router.post('/pay', async (req, res) => {
                     }
                 });
             } else {
-                console.log('\nnmb-school - ' + Date() + ' > ---------------| Ecocash Success |---------------');
+                console.log('\nnmb-school - ' + Date() + ' > ---------------| Ecocash HIT Success |---------------');
                 paymentReference = response.data.responseBody.redisInitiatedEcoCash.clientCorrelator;
-                await delay(100000);
+                await delay(12000);
                 //check txn status
                 
                 for (let i = 0; i < paymentFields.length; i++) {

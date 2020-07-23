@@ -13,7 +13,7 @@ const zipitRouter = require('./app-middlewares/payments/zipit');
 const manualPaymentRouter = require('./app-middlewares/payments/manualPayment');
 const authRouter = require('./app-middlewares/auth');
 const emailRouter = require('./app-middlewares/email');
-const port = 3100;
+const port = 8888;
 const app = express();
 
 var cors = require('cors');
@@ -26,7 +26,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors());
 
-const PATH = '../school-fees/src/assets/images/school-logos'
+const PATH = '../html/assets/images/school-logos'
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
