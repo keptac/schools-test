@@ -26,7 +26,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors());
 
-const PATH = '../html/assets/images/school-logos'
+const PATH = '../school-fees/assets/images/school-logos'
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {

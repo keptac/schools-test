@@ -18,7 +18,7 @@ router.post('/send', async (req, res) => {
         "requestBody": {
             "to": emailAddress,
             "subject": subject,
-            "body": messageBody
+            "message": messageBody
         }
     }).then(async function (response) {
 

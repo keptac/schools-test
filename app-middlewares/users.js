@@ -10,7 +10,7 @@ const { emit } = require('process');
 const cryptr = new Cryptr('Nmb-sx00l-F345-g4t38a6');
 
 router.post('/user', async (req, res) => {
-  const conn = await connection(dbConfig).catch(e => {});
+  const conn = await connection(dbConfig).catch(e => { });
   const idNumber = req.body.idNumber;
   const title = req.body.title;
   const firstName = req.body.firstName;
@@ -67,8 +67,8 @@ router.post('/user', async (req, res) => {
           res.end();
         } else {
           console.log('\n\n---------------| USER CREATED, SENDING EMAIL WITH ACCESS CREDENTIALS|---------------');
-          console.log('nmb-school - ' + Date() + ' > [ id: ' + idNumber + ': ' + firstName + ' ' + surname +' password: '+initialPassword+ ' ]');
-          
+          console.log('nmb-school - ' + Date() + ' > [ id: ' + idNumber + ': ' + firstName + ' ' + surname + ' password: ' + initialPassword + ' ]');
+
           message = `Good day ${title} ${surname} ${firstName}. 
 We have registered your school to accept online fees payments. To finish your configurations, please visit ${url}. 
 Your username is your ID Number and your temporary password is: ${initialPassword}.
@@ -81,7 +81,7 @@ NMBZ`;
             "emailAddress": emailAddress,
             "messageBody": message
           }).then(async function (response) {
-            res.status(201).send({
+            res.send({
               'statusCode': 201,
               'message': 'Success',
               'responseBody': {
@@ -90,7 +90,7 @@ NMBZ`;
               }
             });
             res.end();
-          }); 
+          });
         }
       }
     } else {
@@ -118,19 +118,19 @@ NMBZ`;
 
 // Get all users
 router.get('/users', async (req, res) => {
-  const conn = await connection(dbConfig).catch(e => {});
+  const conn = await connection(dbConfig).catch(e => { });
   const results = await query(conn, 'SELECT * FROM school_user').catch(console.log);
   console.log('\nnmb-school - ' + Date() + ' > --------------| Returned All School Users |---------------');
   res.json({
     results
   });
-  
+
 });
 
 // Get all users for a particular school with school_id :id
 router.get('/school-users/:id', async (req, res) => {
   const id = req.params.id;
-  const conn = await connection(dbConfig).catch(e => {});
+  const conn = await connection(dbConfig).catch(e => { });
   const results = await query(conn, `SELECT * FROM school_user WHERE school_id='${id}'`).catch(console.log);
   console.log('\nnmb-school - ' + Date() + ' > --------------| Returned Users from school: ' + id + ' |---------------');
   res.json({
