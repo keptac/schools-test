@@ -13,6 +13,7 @@ const zipitRouter = require('./app-middlewares/payments/zipit');
 const manualPaymentRouter = require('./app-middlewares/payments/manualPayment');
 const authRouter = require('./app-middlewares/auth');
 const emailRouter = require('./app-middlewares/email');
+const paymentSave = require('./app-middlewares/paymentSave');
 const port = 8888;
 const app = express();
 
@@ -67,6 +68,7 @@ app.use('/api/nmb/cash', cashRouter);
 app.use('/api/nmb/internal', internalTransferRouter);
 app.use('/api/nmb/zipit', zipitRouter);
 app.use('/api/nmb/manual', manualPaymentRouter);
+app.use('/api/nmb/payment', paymentSave);
 // app.use('/api/nmb/upload', uploadFilesRouter);
 
 app.listen(port, () => console.log(`School fees app listening on port ${port}!`));

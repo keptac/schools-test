@@ -4,7 +4,6 @@ const connection = require('../../helpers/connection');
 const query = require('../../helpers/query');
 const dbConfig = require('../../dbConfig');
 const delay = require('delay');
-call = '';
 
 const router = express.Router();
 

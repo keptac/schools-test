@@ -18,13 +18,13 @@ dotenv.config();
 
 
 // Get the Host from Environment or use default
-const host = process.env.DB_HOST || '192.168.220.202';
+const host = process.env.DB_HOST || '192.168.254.63';
 
 // Get the User for DB from Environment or use default
-const user = process.env.DB_USER || 'root';
+const user = process.env.DB_USER || 'digitalbanking';
 
 // Get the Password for DB from Environment or use default
-const password = process.env.DB_PASS || 'p@55w0rd';
+const password = process.env.DB_PASS || '#D!git@lB@nking2020@NMB';
 
 // Get the Database from Environment or use default
 const database = process.env.DB_DATABASE || 'school_fees_db';
