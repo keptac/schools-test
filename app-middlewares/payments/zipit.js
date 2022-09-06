@@ -53,7 +53,7 @@ router.post('/pay', async (req, res) => {
     console.log(toAccounts);
     console.log(banks);
 
-    console.log('\nnmb-school - ' + Date() + ' > ---------------| ZIPIT Transfere 2 |---------------');
+    console.log('\nnmb-school - ' + Date() + ' > ---------------| ZIPIT Transfer 2 |---------------');
 
     axios.post( process.env.LIVE_ZIPIT_URL , {
             "operation": "SCHOOL_FEES_PAYMENT_ZIPIT",

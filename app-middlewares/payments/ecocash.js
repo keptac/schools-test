@@ -35,9 +35,7 @@ router.post('/pay', async (req, res) => {
     amounts = amounts.replace(/(^,)|(,$)/g, "");
     accountNumbers = accountNumbers.replace(/(^,)|(,$)/g, "");
 
-    // 'http://192.168.10.73:9430/v1/rest/iso/secured/ecocash/pay' 196.43.106.54:9430
-
-    axios.post('http://196.43.106.54:9430/v1/rest/iso/secured/ecocash/pay', {
+    axios.post( process.env.LIVE_ECOCASH_URL, {
             'operation': 'SCHOOL_FEES_PAYMENT',
             'async': true,
             'channel': 'SCHOOL_FEES_PORTAL',
