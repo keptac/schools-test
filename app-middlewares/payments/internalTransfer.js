@@ -3,7 +3,7 @@ const express = require('express');
 const connection = require('../../helpers/connection');
 const query = require('../../helpers/query');
 const dbConfig = require('../../dbConfig');
-const delay = require('delay');
+// const delay = require('delay');
 
 const router = express.Router();
 
@@ -116,7 +116,7 @@ router.post('/pay', async (req, res) => {
                     } else {
                         (async () => {
                             console.log('nmb-school - ' + Date() + ' ---------------| Transaction Pending |---------------');
-                            await delay(10000);
+                            // await delay(10000);
                             console.log('nmb-school - ' + Date() + ' ---------------| Payment was successfully captured |---------------\n');
                             res.status(201).send({
                                 'statusCode': 201,

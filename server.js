@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const multer = require('multer');
 const passport = require('passport');
+const https = require('https');
+const fs = require('fs');
 
 const schoolsRouter = require('./app-middlewares/schools');
 const usersRouter = require('./app-middlewares/users');
@@ -13,7 +14,6 @@ const zipitRouter = require('./app-middlewares/payments/zipit');
 const manualPaymentRouter = require('./app-middlewares/payments/manualPayment');
 const authRouter = require('./app-middlewares/auth');
 const emailRouter = require('./app-middlewares/email');
-const paymentSave = require('./app-middlewares/paymentSave');
 const port = 8888;
 const app = express();
 
@@ -29,35 +29,35 @@ app.use(cors());
 
 const PATH = '../school-fees/assets/images/school-logos'
 
-let storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, PATH);
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-' + Date.now())
-  }
-});
-let upload = multer({
-  storage: storage
-});
+// let storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, PATH);
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, file.fieldname + '-' + Date.now())
+//   }
+// });
+// let upload = multer({
+//   storage: storage
+// });
 
 // POST File
-app.post('/api/nmb/upload/logo', upload.single('logo'), function (req, res) {
-  if (!req.file) {
-    console.log("No file is available!");
-    return res.send({
-      success: false
-    });
-  } else {
-    console.log('logo is uploaded!');
-    return res.status(201).send({
-      success: true,
-      fileLocation: `/assets/images/school-logos/${req.file.filename}`
-    })
-  }
-});
+// app.post('/api/nmb/upload/logo', upload.single('logo'), function (req, res) {
+//   if (!req.file) {
+//     console.log("No file is available!");
+//     return res.send({
+//       success: false
+//     });
+//   } else {
+//     console.log('logo is uploaded!');
+//     return res.status(201).send({
+//       success: true,
+//       fileLocation: `/assets/images/school-logos/${req.file.filename}`
+//     })
+//   }
+// });
 
-app.get('/', (req, res) => res.send('Welcome to NMBZ School Fees Payments Gateway'));
+app.get('', (req, res) => { console.log("Schools Connected"); res.send('Welcome to NMBZ School Fees Payments Gateway')});
 app.use('/api/auth', authRouter);
 app.use('/api/nmb/schools', schoolsRouter);
 app.use('/api/nmb/users', usersRouter);
@@ -68,7 +68,11 @@ app.use('/api/nmb/cash', cashRouter);
 app.use('/api/nmb/internal', internalTransferRouter);
 app.use('/api/nmb/zipit', zipitRouter);
 app.use('/api/nmb/manual', manualPaymentRouter);
-app.use('/api/nmb/payment', paymentSave);
 // app.use('/api/nmb/upload', uploadFilesRouter);
 
-app.listen(port, () => console.log(`School fees app listening on port ${port}!`));
+const options = {
+  key: fs.readFileSync('./certs/nmbconnectonline.co.zw.key'),
+  cert: fs.readFileSync('./certs/nmbconnectonline_co_zw.pem')
+};
+
+https.createServer(options, app).listen(port);
