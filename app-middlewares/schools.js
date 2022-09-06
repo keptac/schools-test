@@ -63,7 +63,10 @@ router.get('/schools', async (req, res) => {
 });
 
 router.get('/schools-verified', async (req, res) => {
-  const conn = await connection(dbConfig).catch(e => {});
+  const conn = await connection(dbConfig).catch(e => {
+    console.log(e)
+  });
+
   const results = await query(conn, 'SELECT * FROM school WHERE status_code = 111 OR status_code=110').catch(console.log);
 
   if (results == undefined) {

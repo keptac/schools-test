@@ -43,6 +43,8 @@ router.put('/password-reset', async (req, res) => {
   const results = await query(conn, `SELECT * FROM school_login WHERE id_number = '${username}'`).catch(console.log);
   if (results.length > 0) {
 
+    
+
     if (cryptr.decrypt(results[0].password) == oldPassword) {
     
       const reset = query(conn, `UPDATE school_login SET password = '${password}', password_reset = '0' WHERE id_number = '${username}'`).catch(console.log);;
@@ -132,8 +134,8 @@ router.post('/login', async (req, res) => {
               'fullName': fullDet,
               'role': userDet[0].role,
               'schoolId': userDet[0].school_id,
-              'logo_url': photo[0].logo_url,
-              'schoolName': photo[0].school_name,
+              // 'logo_url': photo[0].logo_url,
+              // 'schoolName': photo[0].school_name,
               'jwt': token,
               'refreshToken': refreshToken
             }
@@ -158,6 +160,9 @@ router.post('/login', async (req, res) => {
       });
     }
   } else {
+
+    console.log(cryptr.decrypt('a184889fd181e459b801c3462d248d23722ed8b96bd1632d2d5a3ac14121da154fe93db0a12b57c48a526d5aa11a7e4d6052a3bf9f79f24692eca7644200981a6c4b4f0ae3020c9864c6dd70afc8236d237892ed74b4ce7d2d065bebfa4501dd62616d8c4070dc37'));
+
     const results = await query(conn, `SELECT * FROM nmb_login WHERE username = '${username}'`).catch(console.log);
     if (results.length > 0) {
       if (cryptr.decrypt(results[0].password) == password) {
