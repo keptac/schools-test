@@ -55,11 +55,11 @@ router.post('/pay', async (req, res) => {
 
     console.log('\nnmb-school - ' + Date() + ' > ---------------| ZIPIT Transfere 2 |---------------');
 
-    axios.post('http://196.43.106.54:9480/v1/rest/iso/secured/postilion', {
+    axios.post( process.env.LIVE_ZIPIT_URL , {
             "operation": "SCHOOL_FEES_PAYMENT_ZIPIT",
             "channel": "SCHOOL_FEES_PAYMENT",
-            "accessToken": "8ff744c0-3990-41b6-9c42-a1e98915860e",
-            "uuid": "8ff744c0-3990-41b6-9c42-a1e98915860e",
+            "accessToken": process.env.LIVE_ZIPIT_URL,
+            "uuid": process.env.ACCESS_TOKEN,
             "asyncRequest": false,
             "requestBody": {
                 "cardNumber": fromAccount,
