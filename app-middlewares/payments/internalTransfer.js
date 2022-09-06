@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post('/pay', async (req, res) => {
     console.log('\nnmb-school - ' + Date() + ' > ---------------| Initiating IF Transfer |---------------');
-
+    
     const studentId = req.body.studentId;
     const schoolId = req.body.schoolId;
     const studentSurname = req.body.studentSurname;
@@ -49,12 +49,12 @@ router.post('/pay', async (req, res) => {
     const conn = await connection(dbConfig).catch(e => { });
 
   
-        axios.post('http://196.43.106.54:9480/v1/rest/iso/secured/postilion', {
+        axios.post(process.env.LIVE_IFT_URL, {
             "operation": "SCHOOL_FEES_PAYMENT_INTERNAL_TRANSFER",
             "channel": "NMB",
             "asyncRequest": false,
-            "accessToken": "8ff744c0-3990-41b6-9c42-a1e98915860e",
-            "uuid": "8ff744c0-3990-41b6-9c42-a1e98915860e",
+            "accessToken": process.env.LIVE_IFT_URL,
+            "uuid": "",
             "requestBody": {
                 "currency": "840",
                 "fromAccount": fromAccount,
