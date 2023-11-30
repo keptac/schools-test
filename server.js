@@ -4,16 +4,13 @@ const passport = require('passport');
 const https = require('https');
 const fs = require('fs');
 
+const Cryptr = require('cryptr');
+
+const cryptr = new Cryptr('Nmb-sx00l-F345-g4t38a6');
+
 const schoolsRouter = require('./app-middlewares/schools');
 const usersRouter = require('./app-middlewares/users');
-const paymentsRouter = require('./app-middlewares/payments/payments');
-const ecocashRouter = require('./app-middlewares/payments/ecocash');
-const cashRouter = require('./app-middlewares/payments/manualPayment');
-const internalTransferRouter = require('./app-middlewares/payments/internalTransfer');
-const zipitRouter = require('./app-middlewares/payments/zipit');
-const manualPaymentRouter = require('./app-middlewares/payments/manualPayment');
 const authRouter = require('./app-middlewares/auth');
-const emailRouter = require('./app-middlewares/email');
 const port = 8888;
 const app = express();
 
@@ -27,47 +24,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors());
 
-const PATH = '../school-fees/assets/images/school-logos'
+app.get('', (req, res) => {
+  console.log(cryptr.decrypt('5d823fb48082625bc86f534e10dd7c30fe9aedc981720c8ec4f24c64aa69aef46e32569961673115fd70522c4826f3227964da0ee5362b9c924a950417dd4610ad889e8d05fed6f3f8677d393d9a04b23122fbda308a6c6be24c772f4b6fafd871bd82685696d9'));
 
-// let storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, PATH);
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, file.fieldname + '-' + Date.now())
-//   }
-// });
-// let upload = multer({
-//   storage: storage
-// });
-
-// POST File
-// app.post('/api/nmb/upload/logo', upload.single('logo'), function (req, res) {
-//   if (!req.file) {
-//     console.log("No file is available!");
-//     return res.send({
-//       success: false
-//     });
-//   } else {
-//     console.log('logo is uploaded!');
-//     return res.status(201).send({
-//       success: true,
-//       fileLocation: `/assets/images/school-logos/${req.file.filename}`
-//     })
-//   }
-// });
-
-app.get('', (req, res) => { console.log("Schools Connected"); res.send('Welcome to NMBZ School Fees Payments Gateway')});
+   console.log("Schools Connected"); res.send('Welcome to NMBZ School Fees Payments Gateway')});
 app.use('/api/auth', authRouter);
 app.use('/api/nmb/schools', schoolsRouter);
 app.use('/api/nmb/users', usersRouter);
-app.use('/api/nmb/email', emailRouter);
-app.use('/api/nmb/payments', paymentsRouter);
-app.use('/api/nmb/ecocash', ecocashRouter);
-app.use('/api/nmb/cash', cashRouter);
-app.use('/api/nmb/internal', internalTransferRouter);
-app.use('/api/nmb/zipit', zipitRouter);
-app.use('/api/nmb/manual', manualPaymentRouter);
 // app.use('/api/nmb/upload', uploadFilesRouter);
 
 const options = {

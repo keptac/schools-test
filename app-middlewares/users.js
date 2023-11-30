@@ -4,8 +4,6 @@ const query = require('../helpers/query');
 const router = express.Router();
 const dbConfig = require('../dbConfig');
 const Cryptr = require('cryptr');
-const axios = require('axios');
-const { emit } = require('process');
 
 const cryptr = new Cryptr('Nmb-sx00l-F345-g4t38a6');
 
@@ -20,11 +18,9 @@ router.post('/user', async (req, res) => {
   const schoolId = req.body.schoolId;
   const role = req.body.role;
   const createdBy = req.body.createdBy;
-  const initialPassword = '@pass' + Math.floor(Math.random() * 1000);
+  const initialPassword = '@pass' + Math.floor(Math.random() * 10000);
   const passwordReset = 1;
   const password = cryptr.encrypt(initialPassword);
-  const url = 'http://196.43.106.54:8008/#/reset-password';
-  const emailUrl = 'http://localhost:8888/api/nmb/email/send';
 
   const checkUser = await query(conn, `SELECT * FROM school_user WHERE id_number = '${idNumber}' OR email_address = '${emailAddress}' OR phone_number='${phoneNumber}'`);
 
@@ -68,29 +64,6 @@ router.post('/user', async (req, res) => {
         } else {
           console.log('\n\n---------------| USER CREATED, SENDING EMAIL WITH ACCESS CREDENTIALS|---------------');
           console.log('nmb-school - ' + Date() + ' > [ id: ' + idNumber + ': ' + firstName + ' ' + surname + ' password: ' + initialPassword + ' ]');
-
-          message = `Good day ${title} ${surname} ${firstName}. 
-We have registered your school to accept online fees payments. To finish your configurations, please visit ${url}. 
-Your username is your ID Number and your temporary password is: ${initialPassword}.
-          
-Thank you for banking with us.
-Regards
-NMBZ`;
-          axios.post(emailUrl, {
-            "subject": "School Fees Portal Profile Creation Success",
-            "emailAddress": emailAddress,
-            "messageBody": message
-          }).then(async function (response) {
-            res.send({
-              'statusCode': 201,
-              'message': 'Success',
-              'responseBody': {
-                'schoolId': schoolId,
-                'password': initialPassword
-              }
-            });
-            res.end();
-          });
         }
       }
     } else {
