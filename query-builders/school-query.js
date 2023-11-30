@@ -1,1 +1,1 @@
-module.exports = () => `SELECT * FROM SCHOOL WHERE school_id = ?`;
+module.exports = () => `SELECT * FROM school WHERE school_id = ?`;
