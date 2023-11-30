@@ -85,20 +85,28 @@ router.get('/schools-verified', async (req, res) => {
 
 router.get('/school/:id', async (req, res) => {
   const id = req.params.id;
-  const conn = await connection(dbConfig).catch(e => {});
-  const school = await query(conn, schoolQuery(), [id]);
 
-  if (school == undefined) {
-    console.log('\nnmb-school - ' + Date() + ' > ---------------> SCHOOOL SEARCH FAILED <---------------');
+  try {
+    const conn = await connection(dbConfig).catch(e => {});
+    const school = await query(conn, schoolQuery(), [id]);
+  
+    if (school == undefined) {
+      console.log('\nnmb-school - ' + Date() + ' > ---------------> SCHOOOL SEARCH FAILED <---------------');
+      res.status(200).send({
+        'statusCode': 500,
+        'message': 'DB Error'
+      });
+    } else {
+      console.log('\nnmb-school - ' + Date() + ' > --------------| Returned School with id: ' + id + ' |---------------');
+      res.send(school[0]);
+    }
+  } catch (error) {
     res.status(200).send({
       'statusCode': 500,
-      'message': 'DB Error'
+      'message': error
     });
-  } else {
-    s
-    console.log('\nnmb-school - ' + Date() + ' > --------------| Returned School with id: ' + id + ' |---------------');
-    res.send(school[0]);
   }
+
 });
 
 // Config Fees Structure
